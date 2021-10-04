@@ -4,6 +4,7 @@ import Register from '../views/Auth/Register.vue'
 import Login from '../views/Auth/Login.vue'
 import Profile from '../views/Auth/Profile.vue'
 import Account from '../views/Auth/Account.vue'
+import Verification from '../views/Auth/Verification.vue'
 
 const routes = [
   {
@@ -40,6 +41,11 @@ const routes = [
     name: 'Account',
     component: Account,
     beforeEnter: checkAuth
+  },
+  {
+    path: '/verification',
+    name: 'Verification',
+    component: Verification
   },
 
 ]

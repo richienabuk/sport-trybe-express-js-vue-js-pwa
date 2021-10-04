@@ -1,5 +1,5 @@
 <template>
-  <section class="text-gray-700 ">
+  <section class="text-gray-700">
     <form @submit.prevent="updateDetails" class="flex flex-col w-full p-10 mx-auto my-6 transition duration-500 ease-in-out transform bg-white border rounded-lg md:w-1/2 md:mt-0">
       <h2 class="mb-3 text-lg font-bold">Update bio data</h2>
       <div class="relative">
@@ -35,11 +35,11 @@
       <h2 class="mb-3 text-lg font-bold">Change password</h2>
       <div class="relative">
         <label for="current-password" class="text-base leading-7 text-gray-500">Current password</label>
-        <input type="password" id="current-password" name="password" v-model="formData.password" placeholder="password" class="w-full px-4 py-2 mt-2 text-base text-black transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-100 focus:border-gray-500 focus:bg-white focus:outline-none focus:shadow-outline focus:ring-2 ring-offset-current ring-offset-2">
+        <input type="password" id="current-password" name="password" v-model="privateData.oldPassword" placeholder="password" class="w-full px-4 py-2 mt-2 text-base text-black transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-100 focus:border-gray-500 focus:bg-white focus:outline-none focus:shadow-outline focus:ring-2 ring-offset-current ring-offset-2">
       </div>
       <div class="relative my-4">
         <label for="new-password" class="text-base leading-7 text-gray-500">New Password</label>
-        <input type="password" id="new-password" name="password" v-model="formData.password" placeholder="password" class="w-full px-4 py-2 mt-2 text-base text-black transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-100 focus:border-gray-500 focus:bg-white focus:outline-none focus:shadow-outline focus:ring-2 ring-offset-current ring-offset-2">
+        <input type="password" id="new-password" name="password" v-model="privateData.password" placeholder="password" class="w-full px-4 py-2 mt-2 text-base text-black transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-100 focus:border-gray-500 focus:bg-white focus:outline-none focus:shadow-outline focus:ring-2 ring-offset-current ring-offset-2">
       </div>
       <div class="inline-flex flex-wrap justify-between">
         <button class="px-4 py-2 my-2 text-base font-medium text-white transition duration-500 ease-in-out transform bg-blue-600 border-blue-600 rounded-md focus:shadow-outline focus:outline-none focus:ring-2 ring-offset-current ring-offset-2 hover:bg-blue-800"> Submit </button>
@@ -59,8 +59,8 @@ export default {
         sports: []
       },
       privateData: {
+        oldPassword: '',
         password: '',
-        currentPassword: ''
       },
     }
   },
@@ -76,12 +76,20 @@ export default {
       this.$store.dispatch("updateAccount", this.formData)
     },
     async changePassword() {
-      const { password, currentPassword } = this.privateData
-      if (password === '' || currentPassword === '') {
+      const { password, oldPassword } = this.privateData
+      if (password === '' || oldPassword === '') {
         alert('All fields are required. Please fill out every field.')
         return
       }
       this.$store.dispatch('changePassword', this.privateData)
+    },
+    loadData() {
+      const { name, email, phone } = this.$store.state.auth.user
+      const sports = []
+      this.$store.state.profile.sports.forEach(sport => sports.push(sport.id))
+      this.formData = {
+        name, email, phone, sports
+      }
     }
   },
 
@@ -91,15 +99,10 @@ export default {
     },
   },
 
-  beforeMount() {
+  mounted() {
     this.$store.dispatch('loadSports')
     this.$store.dispatch('profile')
-    /*const { name, email, phone } = this.$store.state.auth.user
-    const sports = []
-    this.$store.state.profile.sports.forEach(sport => sports.push(sport.id))
-    this.formData = {
-      name, email, phone, sports
-    }*/
+    this.loadData()
   }
 }
 </script>

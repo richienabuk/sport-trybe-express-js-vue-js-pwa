@@ -1,10 +1,19 @@
 import {createStore} from 'vuex'
 import router from "../router";
-import {loadAllSports, logOut, meData, profileData, signIn, signUp} from "../network";
+import {
+    loadAllSports,
+    logOut,
+    meData,
+    profileData,
+    signIn,
+    signUp,
+    updatePassword,
+    updateProfile
+} from "../network";
 
 export default createStore({
     state: {
-        auth: {loggedIn: false, user: {}},
+        auth: { loggedIn: false, user: {} },
         status: {},
         allSports: [],
         profile: {
@@ -39,18 +48,25 @@ export default createStore({
                             e => console.error(e)
                         )
                     },
-                    e => console.error(e)
+                    e => {
+                        alert(e)
+                        console.error(e)
+                    }
                 )
         },
         // eslint-disable-next-line no-unused-vars
         register({commit}, user) {
             signUp(user)
                 .then(
-                    r => {
+                    res => {
                         // router.push('/')
-                        console.log(r)
+                        alert(res.message)
+                        console.log(res)
                     },
-                    e => console.error(e)
+                    e => {
+                        alert(e)
+                        console.error(e)
+                    }
                 )
         },
         logout({commit}) {
@@ -64,7 +80,10 @@ export default createStore({
                 res => {
                     commit('loadUser', res)
                 },
-                e => console.error(e)
+                e => {
+                    alert(e)
+                    console.error(e)
+                }
             )
         },
         profile({ commit }) {
@@ -72,7 +91,10 @@ export default createStore({
                 res => {
                     commit('loadProfile', res)
                 },
-                e => console.error(e)
+                e => {
+                    alert(e)
+                    console.error(e)
+                }
             )
         },
         loadSports({commit}) {
@@ -82,12 +104,32 @@ export default createStore({
                     e => console.error(e)
                 )
         },
-        updateAccount() {
-
+        updateAccount({ commit }, data) {
+            updateProfile(data).then(res => {
+                    commit('loadProfile', res)
+                    alert('Account updated successfully')
+                },
+                e => {
+                    console.error(e)
+                    alert(e)
+                }
+            )
         },
-        changePassword() {
-
+        changePassword({ commit }, data) {
+            updatePassword(data)
+                .then(() => {
+                        logOut().then(() => {
+                            commit('logout');
+                            alert('Password changed successfully')
+                            router.push('/login')
+                        });
+                    },
+                    e => {
+                        alert(e)
+                        console.error(e)
+                    }
+                )
         },
     },
-    modules: {}
+    modules: {},
 })

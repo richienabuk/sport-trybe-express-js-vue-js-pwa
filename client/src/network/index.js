@@ -53,8 +53,39 @@ export function signUp(data) {
     return fetch('/api/v1/auth/signup', requestOptions).then(handleResponse);
 }
 
+export function updateProfile(data) {
+    const requestOptions = {
+        method: 'POST',
+        headers: authHeader(),
+        body: JSON.stringify(data)
+    };
+
+    return fetch('/api/v1/auth/update', requestOptions).then(handleResponse);
+}
+
+export function updatePassword(data) {
+    const requestOptions = {
+        method: 'POST',
+        headers: authHeader(),
+        body: JSON.stringify(data)
+    };
+
+    return fetch('/api/v1/auth/change-password', requestOptions).then(handleResponse);
+}
+
 export function loadAllSports() {
     return fetch('/api/v1/sports').then(handleResponse);
+}
+
+export function accountVerification(data) {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    };
+
+    return fetch('/api/v1/auth/verification', requestOptions)
+        .then(handleResponse);
 }
 
 function handleResponse(response) {
@@ -80,7 +111,7 @@ function authHeader() {
     let token = JSON.parse(localStorage.getItem('userToken'));
 
     if (token) {
-        return { 'Authorization': 'Bearer ' + token };
+        return { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
     } else {
         return {};
     }

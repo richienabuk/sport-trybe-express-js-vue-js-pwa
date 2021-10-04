@@ -11,7 +11,7 @@ import Navbar from '@/components/Layout/Navbar'
 import Footer from '@/components/Layout/Footer'
 export default {
   components: { Navbar, Footer },
-  mounted() {
+  created() {
     const user = JSON.parse(localStorage.getItem('userToken'));
     if (user) {
       this.$store.dispatch("userInfo")

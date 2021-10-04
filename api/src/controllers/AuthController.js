@@ -64,6 +64,37 @@ export default {
     }
   },
 
+  async verification(req, res) {
+    console.log('boy', req.body)
+    const userData = magicTrimmer(req.body);
+    const { id, email, token } = userData;
+
+    const schema = {
+      id: emptyInput(id, 'Data'),
+      email: emptyInput(email, 'Data'),
+      token: emptyInput(token, 'Data'),
+    };
+
+    const error = validate(schema);
+    if (error) return sendErrorResponse(res, 422, error);
+
+    try {
+      const user = await User.findOne({where: {id, email}})
+      if (!user) return sendErrorResponse(res, 422, 'Invalid or malformed link');
+      if (user.verified) return sendSuccessResponse(res, 200, {message: 'Account already verified'});
+
+      const verificationCode = await Verification.findOne({where: {token, email}})
+      if (!verificationCode) return sendErrorResponse(res, 422, 'Invalid or malformed link');
+
+      await user.update({ verification: Date.now() })
+
+      return sendSuccessResponse(res, 200, {message: 'Account verified successfully'});
+    } catch (e) {
+      console.error(e);
+      return sendErrorResponse(res, 500, 'Server error, contact admin to resolve issue', e);
+    }
+  },
+
   async signIn(req, res) {
     const userData = magicTrimmer(req.body);
     const { login, password, device_name } = userData;
@@ -139,4 +170,58 @@ export default {
       return sendErrorResponse(res, 500, 'Server error, contact admin to resolve issue', e);
     }
   },
+
+  async updateProfile(req, res) {
+    try {
+      const userData = magicTrimmer(req.body);
+      const { name, email, phone, sports } = userData;
+      const schema = {
+        name: emptyInput(name, 'Name'),
+        email: inValidEmail(email),
+        phone: emptyInput(phone, 'Name'),
+      };
+
+      const error = validate(schema);
+      if (error) return sendErrorResponse(res, 422, error);
+
+      const user = await req.userData.update({
+        name, email, phone
+      })
+
+      const userSports = await Sport.findAll({ where: { id: sports } });
+      await user.setSports(userSports);
+
+      return sendSuccessResponse(res, 200, user);
+    } catch (e) {
+      console.error(e);
+      return sendErrorResponse(res, 500, 'Server error, contact admin to resolve issue', e);
+    }
+  },
+
+  async changePassword(req, res) {
+    const userData = magicTrimmer(req.body);
+    const { password, oldPassword } = userData;
+
+    const schema = {
+      password: emptyInput(password, 'New password'),
+      oldPassword: emptyInput(oldPassword, 'Current password'),
+    };
+    const error = validate(schema);
+    if (error) return sendErrorResponse(res, 422, error);
+
+    try {
+      const user = await User.findOne({ where: { id: req.userData.id }})
+      const checkPassword = hash_equals(hash(oldPassword), user.password);
+      if (!checkPassword) {
+        return sendErrorResponse(res, 400, 'Current password supplied is incorrect');
+      }
+      await user.update({
+        password: hash(password)
+      })
+      return sendSuccessResponse(res, 200, { message: 'Password changed successfully' });
+    } catch (e) {
+      console.error(e);
+      return sendErrorResponse(res, 500, 'Server error, contact admin to resolve issue', e);
+    }
+  }
 };
