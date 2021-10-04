@@ -19,6 +19,7 @@ export default {
       email: 'richie@strype.com',
       password: hash('Password111'),
       phone: '08091234567',
+      verified: Date.now()
     });
 
     const userSports = await Sport.findAll({ where: { id: [1, 2] } });
