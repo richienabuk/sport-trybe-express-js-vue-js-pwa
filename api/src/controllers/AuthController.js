@@ -8,7 +8,8 @@ import {
 } from '../utils/validator';
 import { sendSuccessResponse, sendErrorResponse } from '../utils/sendResponse';
 import Random from '../utils/random';
-import {hash, hash_equals} from "../utils/hashUtil";
+import { hash, hash_equals } from "../utils/hashUtil";
+import { sendEmail } from "../services/emailClient";
 
 const { User, Sport, PersonalAccessToken, Verification } = model;
 
@@ -49,12 +50,23 @@ export default {
       const userSports = await Sport.findAll({ where: { id: sports } });
       await newUser.addSport(userSports);
 
-      await Verification.create({
+      const { token } = await Verification.create({
         email: email,
         token: Random(8),
       });
 
-      // await sendVerificationEmail(email, token);
+      const verificationLink = process.env.SITE_URL + '/verification?token=' + token + '&email=' + newUser.email + '&id=' + newUser.id;
+      const verificationMsgTxt = `Hello ${name}, thank you for registering on our platform. Kindly verify your account by copying this link into your web browser - ${verificationLink}`;
+      const verificationMsgHtml = `
+      <div>Dear ${newUser.name}</div>
+      <p>Thank you for registering on our platform.</p>
+      <p><a href="${verificationLink}">Click here</a> to verify your account </p>
+      <p>If the link about doesn't work for you, kindly copy and paste the link below in your browser</p>
+      <p>${verificationLink}</p>
+      `;
+
+      await sendEmail(newUser.email, 'Account verification', verificationMsgTxt, verificationMsgHtml)
+
       return sendSuccessResponse(res, 201, {
         message: 'Kindly check your email for link to verify your account.',
       });
