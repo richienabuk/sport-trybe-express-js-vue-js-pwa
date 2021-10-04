@@ -61,7 +61,7 @@ export default createStore({
                     res => {
                         // router.push('/')
                         alert(res.message)
-                        console.log(res)
+                        router.push('/')
                     },
                     e => {
                         alert(e)
