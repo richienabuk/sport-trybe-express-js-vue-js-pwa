@@ -1,0 +1,16 @@
+{
+  "name": "vasiti-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cd api && npm install && npm start",
+    "heroku-postbuild": "cd client && npm install && npm run build"
+  },
+  "author": "Imo-owo Nabuk",
+  "license": "ISC",
+  "engines": {
+    "node": "14.18.0"
+  }
+}
