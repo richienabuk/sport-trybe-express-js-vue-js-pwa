@@ -65,10 +65,14 @@ export default {
       <p>${verificationLink}</p>
       `;
 
-      await sendEmail(newUser.email, 'Account verification', verificationMsgTxt, verificationMsgHtml)
+      try {
+        await sendEmail(newUser.email, 'Account verification', verificationMsgTxt, verificationMsgHtml)
+      } catch (e) {
+        console.error(e)
+      }
 
       return sendSuccessResponse(res, 201, {
-        message: 'Kindly check your email for link to verify your account.',
+        message: 'Kindly check your email for link to verify your account. Be sure to check spam folder too',
       });
     } catch (e) {
       console.error(e);
@@ -77,7 +81,6 @@ export default {
   },
 
   async verification(req, res) {
-    console.log('boy', req.body)
     const userData = magicTrimmer(req.body);
     const { id, email, token } = userData;
 
@@ -98,7 +101,7 @@ export default {
       const verificationCode = await Verification.findOne({where: {token, email}})
       if (!verificationCode) return sendErrorResponse(res, 422, 'Invalid or malformed link');
 
-      await user.update({ verification: Date.now() })
+      await user.update({ verified: Date.now() })
 
       return sendSuccessResponse(res, 200, {message: 'Account verified successfully'});
     } catch (e) {

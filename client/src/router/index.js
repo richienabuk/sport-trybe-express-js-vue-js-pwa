@@ -23,12 +23,14 @@ const routes = [
   {
     path: '/register',
     name: 'Register',
-    component: Register
+    component: Register,
+    beforeEnter: noAuth
   },
   {
     path: '/login',
     name: 'Login',
-    component: Login
+    component: Login,
+    beforeEnter: noAuth
   },
   {
     path: '/profile',
@@ -45,9 +47,9 @@ const routes = [
   {
     path: '/verification',
     name: 'Verification',
-    component: Verification
+    component: Verification,
+    beforeEnter: noAuth
   },
-
 ]
 
 const router = createRouter({
@@ -59,6 +61,12 @@ function checkAuth(to, from, next) {
   const loggedIn = localStorage.getItem('userToken');
   if (loggedIn) next();
   else next("/login");
+}
+
+function noAuth(to, from, next) {
+  const loggedIn = localStorage.getItem('userToken');
+  if (!loggedIn) next();
+  else next("/profile");
 }
 
 export default router
