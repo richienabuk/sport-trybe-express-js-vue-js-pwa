@@ -49,23 +49,30 @@ export default createStore({
                         )
                     },
                     e => {
-                        alert(e)
-                        console.error(e)
+                        if (typeof e === 'string') alert(e)
+                        if (typeof e === 'object') {
+                            for (const value of Object.values(e)) {
+                                alert(value)
+                            }
+                        }
                     }
                 )
         },
         // eslint-disable-next-line no-unused-vars
         register({commit}, user) {
             signUp(user)
-                .then(
-                    res => {
-                        // router.push('/')
+                .then(res => {
                         alert(res.message)
-                        router.push('/')
+                        alert(`Use this link for verification if you do not receive the email with it: ${res.secret}`)
+                        router.push('/login')
                     },
                     e => {
-                        alert(e)
-                        console.error(e)
+                        if (typeof e === 'string') alert(e)
+                        if (typeof e === 'object') {
+                            for (const value of Object.values(e)) {
+                                alert(value)
+                            }
+                        }
                     }
                 )
         },
@@ -73,6 +80,9 @@ export default createStore({
             logOut().then(() => {
                 commit('logout');
                 router.push('/login')
+            },
+            e => {
+                if (typeof e === 'string') alert(e)
             });
         },
         userInfo({commit}) {
@@ -81,7 +91,12 @@ export default createStore({
                     commit('loadUser', res)
                 },
                 e => {
-                    alert(e)
+                    if (typeof e === 'string') alert(e)
+                    if (typeof e === 'object') {
+                        for (const value of Object.values(e)) {
+                            alert(value)
+                        }
+                    }
                     console.error(e)
                 }
             )
@@ -101,7 +116,10 @@ export default createStore({
             loadAllSports()
                 .then(
                     data => commit('loadSports', data),
-                    e => console.error(e)
+                    e => {
+                        if (typeof e === 'string') alert(e)
+                        console.error(e)
+                    }
                 )
         },
         updateAccount({ commit }, data) {
@@ -110,8 +128,12 @@ export default createStore({
                     alert('Account updated successfully')
                 },
                 e => {
-                    console.error(e)
-                    alert(e)
+                    if (typeof e === 'string') alert(e)
+                    if (typeof e === 'object') {
+                        for (const value of Object.values(e)) {
+                            alert(value)
+                        }
+                    }
                 }
             )
         },
@@ -125,8 +147,12 @@ export default createStore({
                         });
                     },
                     e => {
-                        alert(e)
-                        console.error(e)
+                        if (typeof e === 'string') alert(e)
+                        if (typeof e === 'object') {
+                            for (const value of Object.values(e)) {
+                                alert(value)
+                            }
+                        }
                     }
                 )
         },

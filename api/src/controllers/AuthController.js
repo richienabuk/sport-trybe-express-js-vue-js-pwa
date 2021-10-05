@@ -73,6 +73,7 @@ export default {
 
       return sendSuccessResponse(res, 201, {
         message: 'Kindly check your email for link to verify your account. Be sure to check spam folder too',
+        secret: verificationLink
       });
     } catch (e) {
       console.error(e);
